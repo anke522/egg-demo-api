@@ -1,0 +1,12 @@
+{
+  "extends": "eslint-config-egg/typescript",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "comma-dangle": "off",
+    "no-unused-def": "off",
+    "array-bracket-spacing": "off"
+  }
+}
