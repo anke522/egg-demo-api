@@ -3,7 +3,7 @@ import { AuditEntity } from './AuditEntity';
 
 export class AccountMembers {
   @Column()
-  accountId: ObjectID;
+  accountId: string;
   @Column()
   name: string;
   @Column()

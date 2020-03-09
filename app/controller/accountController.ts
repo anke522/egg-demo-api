@@ -49,12 +49,19 @@ export default class AccountController extends AbstractController {
     const account = await this.service.accountService.findByEmail(email)!;
     if (account) {
       passport = await compare(password, account.password);
-    }
-    if (passport) {
-      this.ctx.session.id = account?.id;
-      this.success(account);
+      if (passport) {
+        const token = this.app.jwt.sign(
+          account.id.toHexString(),
+          account.passsalt
+        );
+        this.ctx.cookies.set('accountId', account.id.toHexString());
+        this.ctx.cookies.set('token', token);
+        this.success(account);
+      } else {
+        this.error({ msg: '密码错误' });
+      }
     } else {
-      this.error({ msg: '账号或密码错误' });
+      this.error({ msg: '账号错误' });
     }
   }
   async changePassword() {
@@ -81,9 +88,44 @@ export default class AccountController extends AbstractController {
       account!.id,
       password
     );
-    if (rs.affected! > 0) {
+    if (rs) {
       this.success(rs);
+    } else {
+      this.error('重置账户密码失败');
     }
-    this.error('重置账户密码失败');
+  }
+  async delete(accountId: string) {
+    const result = await this.service.accountService.delete(accountId);
+    if (result.affected) {
+      this.success({ msg: 'ok' });
+    } else {
+      this.error('重置账户密码失败');
+    }
+  }
+
+  async logout() {
+    const id = this.ctx.id;
+    Object.assign(this.ctx.session, { id: undefined, token: undefined });
+    this.success({ id });
+  }
+
+  async updateAvatar() {
+    const baseCode: string = this.ctx.request.body.baseCode;
+    const pngPrefixCode = 'data:image/png;base64,';
+    const jpegPrefixCode = 'data:image/jpeg;base64,';
+
+    if (baseCode.length - (baseCode.length / 8) * 2 > 200000) {
+      this.error({ msg: '图片大小不能超过200kb' });
+    }
+  }
+
+  async search() {
+    const { queryString, limit, page } = this.ctx.request.body;
+    const accounts = await this.service.accountService.search(
+      limit,
+      page,
+      queryString
+    );
+    this.success(accounts);
   }
 }

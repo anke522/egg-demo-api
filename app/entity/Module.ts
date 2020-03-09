@@ -21,5 +21,5 @@ export class Module {
   repositoryId: string;
 
   @Column()
-  interface: ObjectID[];
+  interface: string[];
 }

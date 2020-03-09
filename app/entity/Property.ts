@@ -1,4 +1,4 @@
-import { Column, ObjectID } from 'typeorm';
+import { Column } from 'typeorm';
 
 export enum InterfaceScopeType {
   REQUEST = 'request',
@@ -28,9 +28,9 @@ export class Property {
   })
   scope: InterfaceScopeType;
   @Column()
-  interfaceId: ObjectID;
+  interfaceId: string;
   @Column()
-  parentId: ObjectID;
+  parentId: string;
   @Column()
   name: string;
   @Column('enum', {

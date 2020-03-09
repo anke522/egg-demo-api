@@ -1,13 +1,13 @@
-import { ObjectIdColumn, ObjectID, Column } from 'typeorm';
+import { ObjectIdColumn, ObjectID, Column, Entity } from 'typeorm';
 import { AccountMembers } from './Account';
 
 export class OrganizationsRepository {
   @Column()
-  repositoryId: ObjectID;
+  repositoryId: string;
   @Column()
   name: string;
 }
-
+@Entity()
 export class Organization {
   @ObjectIdColumn()
   id: ObjectID;
@@ -25,10 +25,10 @@ export class Organization {
   visibility: boolean;
 
   @Column()
-  creatorId: ObjectID;
+  creatorId: string;
 
   @Column()
-  ownerId: ObjectID;
+  ownerId: string;
 
   @Column(() => AccountMembers)
   organizationMembers: AccountMembers[];

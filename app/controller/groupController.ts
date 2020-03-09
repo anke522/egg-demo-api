@@ -18,4 +18,15 @@ export default class GroupController extends AbstractController {
     const resources = await this.service.groupService.create(body);
     this.ctx.body = { resources };
   }
+
+  async search() {
+    const queryString = this.ctx.request.body;
+    const accounts = await this.service.groupService.search(queryString);
+    this.success(accounts);
+  }
+
+  async count() {
+    const count = await this.service.groupService.totalCount();
+    this.success({ count });
+  }
 }

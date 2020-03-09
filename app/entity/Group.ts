@@ -19,7 +19,7 @@ export enum GroupMemberRoleEnum {
 }
 export class GroupMember {
   @Column()
-  accountId: ObjectID;
+  accountId: string;
   @Column()
   name: string;
   @Column()

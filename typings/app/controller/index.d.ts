@@ -7,6 +7,8 @@ import ExportAccountController from '../../../app/controller/accountController';
 import ExportGroupController from '../../../app/controller/groupController';
 import ExportHome from '../../../app/controller/home';
 import ExportInterfaceController from '../../../app/controller/interfaceController';
+import ExportRepositoryController from '../../../app/controller/repositoryController';
+import ExportTeamController from '../../../app/controller/teamController';
 
 declare module 'egg' {
   interface IController {
@@ -15,5 +17,7 @@ declare module 'egg' {
     groupController: ExportGroupController;
     home: ExportHome;
     interfaceController: ExportInterfaceController;
+    repositoryController: ExportRepositoryController;
+    teamController: ExportTeamController;
   }
 }

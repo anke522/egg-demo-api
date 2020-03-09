@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.2",
+    "@types/jsonwebtoken": "^8.3.8",
     "bcryptjs": "^2.4.3",
     "egg": "^2.6.1",
     "egg-cors": "^2.2.3",

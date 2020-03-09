@@ -1,4 +1,4 @@
-import { ObjectIdColumn, ObjectID, Column } from 'typeorm';
+import { ObjectIdColumn, ObjectID, Column, Entity } from 'typeorm';
 
 enum LoggerType {
   CREATE = 'create',
@@ -9,7 +9,7 @@ enum LoggerType {
   JOIN = 'join',
   EXIT = 'exit'
 }
-
+@Entity()
 export class Logger {
   @ObjectIdColumn()
   id: ObjectID;
@@ -17,20 +17,20 @@ export class Logger {
   type: LoggerType;
 
   @Column()
-  creatorId: ObjectID;
+  creatorId: string;
 
   @Column()
-  userId: ObjectID;
+  userId: string;
 
   @Column()
-  organizationId: ObjectID;
+  organizationId: string;
 
   @Column()
-  repositoryId: ObjectID;
+  repositoryId: string;
 
   @Column()
-  moduleId: ObjectID;
+  moduleId: string;
 
   @Column()
-  interfaceId: ObjectID;
+  interfaceId: string;
 }

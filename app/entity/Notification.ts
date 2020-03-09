@@ -1,12 +1,12 @@
-import { ObjectIdColumn, ObjectID, Column } from 'typeorm';
-
+import { ObjectIdColumn, ObjectID, Column, Entity } from 'typeorm';
+@Entity()
 export class Notification {
   @ObjectIdColumn()
   id: ObjectID;
   @Column()
-  fromId: ObjectID;
+  fromId: string;
   @Column()
-  toId: ObjectID;
+  toId: string;
   @Column()
   type: string;
   @Column()

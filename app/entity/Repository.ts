@@ -27,16 +27,16 @@ export class Repository {
   visibility: boolean;
 
   @Column()
-  ownerId: ObjectID;
+  ownerId: string;
 
   @Column()
-  organizationId: ObjectID;
+  organizationId: string;
 
   @Column()
-  creatorId: ObjectID;
+  creatorId: string;
 
   @Column()
-  lockerId: ObjectID;
+  lockerId: string;
 
   @Column(() => AccountMembers)
   members: AccountMembers[];

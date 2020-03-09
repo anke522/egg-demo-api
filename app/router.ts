@@ -5,13 +5,17 @@ export default (app: Application) => {
 
   router.get('/', controller.home.index);
   router.post('/server/group', controller.groupController.create);
+  router.get('/server/group/search', controller.groupController.search);
+  router.get('/server/group/count', controller.groupController.count);
   router.post(
     '/server/account/register',
     controller.accountController.register
   );
   router.post('/server/account/login', controller.accountController.login);
-  app.put(
+  router.put(
     '/server/account/password',
     controller.accountController.changePassword
   );
+  router.get('/server/account/search', controller.accountController.search);
+  router.post('/server/team', controller.teamController.create);
 };
