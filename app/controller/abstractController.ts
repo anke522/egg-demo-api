@@ -15,4 +15,12 @@ export default class AbstractController extends Controller {
   notFound(msg = 'not found') {
     this.ctx.throw(404, msg);
   }
+  getAccountId() {
+    const token = this.ctx.cookies.get('token', {
+      signed: false,
+      encrypt: true
+    });
+    const accountId = this.app.jwt.decode(token);
+    return accountId;
+  }
 }

@@ -2,7 +2,6 @@ import { Service, Context } from 'egg';
 import { Account } from '../entity/Account';
 import { getRepository, Repository, UpdateResult, ObjectID } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
-import { ObjectId } from 'mongodb';
 export default class UserService extends Service {
   repository: Repository<Account>;
   selectAttributes;
@@ -56,11 +55,8 @@ export default class UserService extends Service {
   totalCount() {
     return this.repository.count();
   }
-  async findById(accountId: string) {
-    const a = new ObjectId(accountId);
-    const account = await this.findByEmail('anke522@163.com');
-    const eccount = await this.repository.find({ id: a });
-    return eccount;
+  findById(accountId: string) {
+    return this.repository.findOne(accountId);
   }
   findByEmail(email: string) {
     return this.repository.findOne({ email });

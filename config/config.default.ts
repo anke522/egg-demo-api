@@ -15,6 +15,13 @@ export default (appInfo: EggAppInfo) => {
       enable: false
     }
   };
+  config.middleware = ['auth'];
+  config.authLogin = {
+    ignore: ['/server/account/login', '/server/account/register']
+  };
+  config.cors = {
+    credentials: true
+  };
   // add your special config in here
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`

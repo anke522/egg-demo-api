@@ -18,4 +18,5 @@ export default (app: Application) => {
   );
   router.get('/server/account/search', controller.accountController.search);
   router.post('/server/team', controller.teamController.create);
+  router.post('/server/team/member', controller.teamController.addTeamMember);
 };

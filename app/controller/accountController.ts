@@ -54,9 +54,22 @@ export default class AccountController extends AbstractController {
           account.id.toHexString(),
           account.passsalt
         );
-        this.ctx.cookies.set('accountId', account.id.toHexString());
-        this.ctx.cookies.set('token', token);
-        this.success(account);
+        this.ctx.cookies.set('sign', account.id.toString(), {
+          signed: false,
+          httpOnly: false,
+          encrypt: true
+        });
+        this.ctx.cookies.set('token', token, {
+          signed: false,
+          httpOnly: false,
+          encrypt: true
+        });
+        this.success({
+          email: account.email,
+          id: account.id,
+          name: account.name,
+          token
+        });
       } else {
         this.error({ msg: '密码错误' });
       }

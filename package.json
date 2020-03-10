@@ -29,6 +29,7 @@
     "egg-cors": "^2.2.3",
     "egg-jwt": "^3.1.7",
     "egg-scripts": "^2.6.0",
+    "egg-session": "^3.1.0",
     "http-assert": "^1.4.1",
     "mongodb": "^3.5.4",
     "svg-captcha": "^1.4.0",
