@@ -1,12 +1,12 @@
 import { Service, Context } from 'egg';
-import { Repository, getRepository, Like } from 'typeorm';
+import { Like, MongoRepository, getMongoRepository } from 'typeorm';
 import { Organization } from '../entity/Organization';
 
 export class OrganizationService extends Service {
-  repository: Repository<Organization>;
+  repository: MongoRepository<Organization>;
   constructor(ctx: Context) {
     super(ctx);
-    this.repository = getRepository(Organization);
+    this.repository = getMongoRepository(Organization);
   }
   count() {
     return this.repository.count();
@@ -17,20 +17,16 @@ export class OrganizationService extends Service {
       Object.assign(where, { name: Like(keyword) });
     }
     return this.repository.find({
-      where: {
-        organizationMembers: { repositoryId: 'asdss' }
-      },
+      where,
       skip: (page - 1) * limit,
       take: limit
     });
   }
-  query(accountId: string, name: string, limit = 15, page = 1) {
+  getOwnOrganization(accountId: string) {
     return this.repository.find({
       where: {
         $or: [{ ownerId: accountId }, { creatorId: accountId }]
-      },
-      skip: (page - 1) * limit,
-      take: limit
+      }
     });
   }
 }

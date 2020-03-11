@@ -2,6 +2,7 @@
 // Do not modify this file!!!!!!!!!
 
 import 'egg';
+import ExportAbstractService from '../../../app/service/AbstractService';
 import ExportAccountService from '../../../app/service/AccountService';
 import ExportAnalytics from '../../../app/service/Analytics';
 import ExportAvatarService from '../../../app/service/AvatarService';
@@ -21,6 +22,7 @@ import ExportTraceLoggerService from '../../../app/service/TraceLoggerService';
 
 declare module 'egg' {
   interface IService {
+    abstractService: ExportAbstractService;
     accountService: ExportAccountService;
     analytics: ExportAnalytics;
     avatarService: ExportAvatarService;

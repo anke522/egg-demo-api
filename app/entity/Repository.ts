@@ -7,7 +7,7 @@ export class RepositoryMember {
   userId: string;
 
   @Column()
-  repositoryId: string;
+  email: string;
 }
 
 @Entity()

@@ -1,6 +1,9 @@
 import { AuditEntity } from './AuditEntity';
 import { ObjectID, ObjectIdColumn, Column, Entity } from 'typeorm';
-
+export enum SecretLevelEnum {
+  PUBLIC = 'public',
+  PRIVATE = 'private'
+}
 export enum TeamMemberRoleEnum {
   OWNER = 'owner',
   DEV = 'dev',
@@ -34,6 +37,8 @@ export class Team extends AuditEntity {
   @Column()
   creator: string;
 
+  @Column('enum', { enum: SecretLevelEnum, default: SecretLevelEnum.PUBLIC })
+  secret: SecretLevelEnum;
   @Column()
   members: TeamMember[];
 }

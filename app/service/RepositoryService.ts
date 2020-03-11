@@ -1,12 +1,11 @@
-import { Repository as RepositoryEntity } from '../entity/Repository';
-import { Service, Context } from 'egg';
-import { Repository, getRepository, Like } from 'typeorm';
+import { Repository as RepositoryEntity, RepositoryMember } from '../entity/Repository';
+import { AbstractService } from './AbstractService';
+import { Like } from 'typeorm';
+import { Context } from 'egg';
 
-export class RepositoryService extends Service {
-  repository: Repository<RepositoryEntity>;
+export default class RepositoryService extends AbstractService<RepositoryEntity> {
   constructor(ctx: Context) {
-    super(ctx);
-    this.repository = getRepository(RepositoryEntity);
+    super(ctx, RepositoryEntity);
   }
   search(limit = 15, page = 1, queryString = '') {
     const where = {};
@@ -23,5 +22,15 @@ export class RepositoryService extends Service {
   }
   totalCount() {
     return this.repository.count();
+  }
+  create(accountId: string, name: string, description: string, members: RepositoryMember[]) {
+    const repository = this.repository.create({
+      name,
+      description,
+      creatorId: accountId,
+      ownerId: accountId,
+      members
+    });
+    this.repository.save(repository);
   }
 }

@@ -1,16 +1,5 @@
 import { Service, Context } from 'egg';
-import {
-  Repository,
-  getRepository,
-  ObjectID,
-  Any,
-  FindOneOptions,
-  FindConditions,
-  Like,
-  In,
-  MongoRepository,
-  getMongoRepository
-} from 'typeorm';
+import { ObjectID, MongoRepository, getMongoRepository } from 'typeorm';
 import { Team, TeamMember, TeamMemberRoleEnum } from '../entity/Team';
 export default class TeamService extends Service {
   repository: MongoRepository<Team>;
@@ -22,14 +11,14 @@ export default class TeamService extends Service {
     return this.repository.count({ name });
   }
   checkOwnTeam(accountId: string, teamId: string) {
-    const memberCondition: FindConditions<TeamMember> = {
-      accountId,
-      role: TeamMemberRoleEnum.OWNER
-    };
-    return this.repository.find({
+    return this.repository.findOne(teamId, {
       where: {
-        $or: [{ name: Like('测试') }]
-        // members: { accountId },
+        members: {
+          $elemMatch: {
+            accountId,
+            role: TeamMemberRoleEnum.OWNER
+          }
+        }
       }
     });
   }
@@ -42,7 +31,12 @@ export default class TeamService extends Service {
   findOwnTeam(accountId: string) {
     return this.repository.find({
       where: {
-        members: { accountId, role: TeamMemberRoleEnum.OWNER }
+        members: {
+          $elemMatch: {
+            accountId,
+            role: TeamMemberRoleEnum.OWNER
+          }
+        }
       }
     });
   }
@@ -54,5 +48,45 @@ export default class TeamService extends Service {
   }
   save(team: Team) {
     return this.repository.save(team);
+  }
+  delete(teamId: ObjectID) {
+    return this.repository.delete(teamId);
+  }
+  addMember(teamId: ObjectID, member: TeamMember) {
+    return this.repository.updateOne(
+      { _id: teamId },
+      {
+        $addToSet: { members: member }
+      }
+    );
+  }
+  deleteMember(teamId: ObjectID, memberAccountId: string) {
+    return this.repository.updateOne(
+      { _id: teamId },
+      {
+        $pull: { members: { accountId: memberAccountId } }
+      }
+    );
+  }
+  changeMemberRole(
+    teamId: ObjectID,
+    memberAccountId: string,
+    role: TeamMemberRoleEnum
+  ) {
+    return this.repository.updateOne(
+      {
+        _id: teamId,
+        members: {
+          $elemMatch: {
+            account: memberAccountId
+          }
+        }
+      },
+      {
+        $set: {
+          'members.$.role': role
+        }
+      }
+    );
   }
 }

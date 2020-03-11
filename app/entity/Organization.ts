@@ -21,7 +21,7 @@ export class Organization {
   @Column()
   logo: string;
 
-  @Column()
+  @Column({ default: true })
   visibility: boolean;
 
   @Column()

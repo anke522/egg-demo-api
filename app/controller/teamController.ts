@@ -28,9 +28,65 @@ export default class TeamController extends AbstractController {
     assert(id, 403, 'required teamId');
     assert(email, 403, 'required account email');
     const accountId = this.getAccountId();
-    // assert(account, 403, 'email ignore');
-    const teamOb = await this.service.teamService.findById(id);
     const team = await this.service.teamService.checkOwnTeam(accountId, id);
-    this.success(team);
+    assert(team, 403, 'team ignore or team not alone current account');
+    if (team) {
+      const account = await this.service.accountService.findByEmail(email);
+      assert(account, 403, 'account email ignore');
+      if (account) {
+        const member = new TeamMember();
+        member.accountId = account.id.toString();
+        member.email = account.email;
+        member.role = TeamMemberRoleEnum.DEV;
+        const result = await this.service.teamService.addMember(
+          team.id,
+          member
+        );
+        this.success(result);
+      }
+    }
+  }
+  async deleteTeam() {
+    const { id } = this.ctx.request.query;
+    assert(id, 403, 'required teamId');
+    const accountId = this.getAccountId();
+    const team = await this.service.teamService.checkOwnTeam(accountId, id);
+    assert(team, 403, 'team ignore or team not alone current account');
+    if (team) {
+      const result = await this.service.teamService.delete(team.id);
+      this.success(result);
+    }
+  }
+  async deleteTeamMember() {
+    const { id, memberId } = this.ctx.request.query;
+    assert(id, 403, 'required teamId');
+    assert(memberId, 403, 'required memberId');
+    const accountId = this.getAccountId();
+    const team = await this.service.teamService.checkOwnTeam(accountId, id);
+    assert(team, 403, 'team ignore or team not alone current account');
+    if (team) {
+      const result = await this.service.teamService.deleteMember(
+        team.id,
+        memberId
+      );
+      this.success(result);
+    }
+  }
+  async updateTeamMemberRole() {
+    const { id, memberId, role } = this.ctx.request.body;
+    assert(id, 403, 'required teamId');
+    assert(memberId, 403, 'required memberId');
+    assert(role, 403, 'required role');
+    const accountId = this.getAccountId();
+    const team = await this.service.teamService.checkOwnTeam(accountId, id);
+    assert(team, 403, 'team ignore or team not alone current account');
+    if (team) {
+      const result = await this.service.teamService.changeMemberRole(
+        team.id,
+        memberId,
+        role
+      );
+      this.success(result);
+    }
   }
 }
