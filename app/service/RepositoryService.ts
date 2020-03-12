@@ -1,6 +1,6 @@
 import { Repository as RepositoryEntity, RepositoryMember } from '../entity/Repository';
 import { AbstractService } from './AbstractService';
-import { Like } from 'typeorm';
+import { Like, ObjectID } from 'typeorm';
 import { Context } from 'egg';
 
 export default class RepositoryService extends AbstractService<RepositoryEntity> {
@@ -31,6 +31,59 @@ export default class RepositoryService extends AbstractService<RepositoryEntity>
       ownerId: accountId,
       members
     });
-    this.repository.save(repository);
+    return this.repository.save(repository);
+  }
+  checkOwn(accountId: string, repositoryId: string) {
+    return this.repository.findOne(repositoryId, { where: { ownerId: accountId } });
+  }
+  delete(id: string) {
+    return this.repository.delete(id);
+  }
+  findParticipate(accountId: string) {
+    return this.repository.find({
+      select: ['id', 'name'],
+      where: {
+        $or: [
+          {
+            members: {
+              $elemMatch: {
+                accountId
+              }
+            }
+          },
+          {
+            creatorId: accountId
+          },
+          {
+            ownerId: accountId
+          }
+        ]
+      }
+    });
+  }
+  findById(repositoryId: string) {
+    return this.repository.findOne(repositoryId);
+  }
+  findByName(name: string) {
+    return this.repository.findOne({ name });
+  }
+  addMember(repositoryId: ObjectID, member: RepositoryMember) {
+    return this.repository.updateOne(
+      { _id: repositoryId },
+      {
+        $addToSet: { members: member }
+      }
+    );
+  }
+  deleteMember(repositoryId: ObjectID, memberAccountId: string) {
+    return this.repository.updateOne(
+      { _id: repositoryId },
+      {
+        $pull: { members: { accountId: memberAccountId } }
+      }
+    );
+  }
+  update(repository: RepositoryEntity) {
+    return this.repository.save(repository);
   }
 }

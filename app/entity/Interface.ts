@@ -6,20 +6,27 @@ export class Interface extends AuditEntity {
   @ObjectIdColumn()
   id: ObjectID;
 
+  @Column()
   name: string;
+
+  @Column()
   description: string;
 
+  @Column()
   url: string;
+
+  @Column()
   method: string;
 
   @Column()
-  creatorId: number;
+  creatorId: string;
 
   @Column()
-  moduleId: number;
+  moduleId: string;
 
   @Column()
-  repositoryId: number;
+  repositoryId: string;
+
   @Column(() => Property)
   properties: Property[];
 }

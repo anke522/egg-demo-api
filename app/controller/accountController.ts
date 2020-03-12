@@ -1,6 +1,8 @@
 import AbstractController from './abstractController';
 import * as svgCaptcha from 'svg-captcha';
 import { compare } from 'bcryptjs';
+import assert = require('http-assert');
+
 export default class AccountController extends AbstractController {
   async count() {
     const count = this.service.accountService.totalCount();
@@ -23,11 +25,7 @@ export default class AccountController extends AbstractController {
       this.error({ msg: '该邮件已被注册，请更换再试。' });
     }
 
-    const user = await this.service.accountService.create(
-      name,
-      email,
-      password
-    );
+    const user = await this.service.accountService.create(name, email, password);
 
     this.success(user);
   }
@@ -50,10 +48,7 @@ export default class AccountController extends AbstractController {
     if (account) {
       passport = await compare(password, account.password);
       if (passport) {
-        const token = this.app.jwt.sign(
-          account.id.toHexString(),
-          account.passsalt
-        );
+        const token = this.app.jwt.sign(account.id.toHexString(), account.passsalt);
         this.ctx.cookies.set('sign', account.id.toString(), {
           signed: false,
           httpOnly: false,
@@ -97,10 +92,7 @@ export default class AccountController extends AbstractController {
     if (!verify) {
       this.error('旧密码错误');
     }
-    const rs = await this.service.accountService.updatePassword(
-      account!.id,
-      password
-    );
+    const rs = await this.service.accountService.updatePassword(account!.id, password);
     if (rs) {
       this.success(rs);
     } else {
@@ -134,11 +126,30 @@ export default class AccountController extends AbstractController {
 
   async search() {
     const { queryString, limit, page } = this.ctx.request.body;
-    const accounts = await this.service.accountService.search(
-      limit,
-      page,
-      queryString
-    );
+    const accounts = await this.service.accountService.search(limit, page, queryString);
     this.success(accounts);
+  }
+  async accountFlow() {
+    const accountId = this.getAccountId();
+    const repositories = await this.service.repositoryService.findParticipate(accountId);
+    if (repositories.length > 0) {
+      const flows = this.service.loggerService.queryByRepositoryIds(
+        repositories.map(r => r.id.toString())
+      );
+      this.success(flows);
+    } else {
+      this.success([]);
+    }
+  }
+  async repositoryFlow() {
+    const accountId = this.getAccountId();
+    const repository = await this.service.repositoryService.findById(accountId);
+    assert(repository, 403, 'required repository Id');
+    if (repository) {
+      const flows = this.service.loggerService.queryRepository(repository.id);
+      this.success(flows);
+    } else {
+      this.success([]);
+    }
   }
 }

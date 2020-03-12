@@ -14,10 +14,7 @@ export default class TeamController extends AbstractController {
     const accountId = this.getAccountId();
     const account = await this.service.accountService.findById(accountId);
     if (account) {
-      const member = new TeamMember();
-      member.accountId = accountId;
-      member.email = account.email;
-      member.role = TeamMemberRoleEnum.OWNER;
+      const member = new TeamMember(accountId.toString(), account.email);
       team.members = [member];
     }
     const result = await this.service.teamService.save(team);
@@ -34,14 +31,8 @@ export default class TeamController extends AbstractController {
       const account = await this.service.accountService.findByEmail(email);
       assert(account, 403, 'account email ignore');
       if (account) {
-        const member = new TeamMember();
-        member.accountId = account.id.toString();
-        member.email = account.email;
-        member.role = TeamMemberRoleEnum.DEV;
-        const result = await this.service.teamService.addMember(
-          team.id,
-          member
-        );
+        const member = new TeamMember(account.id.toString(), account.email, TeamMemberRoleEnum.DEV);
+        const result = await this.service.teamService.addMember(team.id, member);
         this.success(result);
       }
     }
@@ -65,10 +56,7 @@ export default class TeamController extends AbstractController {
     const team = await this.service.teamService.checkOwnTeam(accountId, id);
     assert(team, 403, 'team ignore or team not alone current account');
     if (team) {
-      const result = await this.service.teamService.deleteMember(
-        team.id,
-        memberId
-      );
+      const result = await this.service.teamService.deleteMember(team.id, memberId);
       this.success(result);
     }
   }
@@ -81,11 +69,7 @@ export default class TeamController extends AbstractController {
     const team = await this.service.teamService.checkOwnTeam(accountId, id);
     assert(team, 403, 'team ignore or team not alone current account');
     if (team) {
-      const result = await this.service.teamService.changeMemberRole(
-        team.id,
-        memberId,
-        role
-      );
+      const result = await this.service.teamService.changeMemberRole(team.id, memberId, role);
       this.success(result);
     }
   }

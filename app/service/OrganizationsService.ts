@@ -1,12 +1,11 @@
-import { Service, Context } from 'egg';
-import { Like, MongoRepository, getMongoRepository } from 'typeorm';
+import { Context } from 'egg';
+import { Like } from 'typeorm';
 import { Organization } from '../entity/Organization';
+import { AbstractService } from './AbstractService';
 
-export class OrganizationService extends Service {
-  repository: MongoRepository<Organization>;
+export class OrganizationService extends AbstractService<Organization> {
   constructor(ctx: Context) {
-    super(ctx);
-    this.repository = getMongoRepository(Organization);
+    super(ctx, Organization);
   }
   count() {
     return this.repository.count();

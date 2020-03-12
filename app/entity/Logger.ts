@@ -1,6 +1,6 @@
-import { ObjectIdColumn, ObjectID, Column, Entity } from 'typeorm';
+import { ObjectIdColumn, ObjectID, Column, Entity, CreateDateColumn } from 'typeorm';
 
-enum LoggerType {
+export enum LoggerType {
   CREATE = 'create',
   UPDATE = 'update',
   DELETE = 'delete',
@@ -33,4 +33,10 @@ export class Logger {
 
   @Column()
   interfaceId: string;
+
+  @Column()
+  content: string;
+
+  @CreateDateColumn()
+  createAt: Date;
 }

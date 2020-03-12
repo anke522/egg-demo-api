@@ -1,11 +1,10 @@
-import { Service, Context } from 'egg';
-import { ObjectID, MongoRepository, getMongoRepository } from 'typeorm';
+import { Context } from 'egg';
+import { ObjectID } from 'typeorm';
 import { Team, TeamMember, TeamMemberRoleEnum } from '../entity/Team';
-export default class TeamService extends Service {
-  repository: MongoRepository<Team>;
+import { AbstractService } from './AbstractService';
+export default class TeamService extends AbstractService<Team> {
   constructor(ctx: Context) {
-    super(ctx);
-    this.repository = getMongoRepository(Team);
+    super(ctx, Team);
   }
   checkRepeat(name: string) {
     return this.repository.count({ name });
@@ -68,11 +67,7 @@ export default class TeamService extends Service {
       }
     );
   }
-  changeMemberRole(
-    teamId: ObjectID,
-    memberAccountId: string,
-    role: TeamMemberRoleEnum
-  ) {
+  changeMemberRole(teamId: ObjectID, memberAccountId: string, role: TeamMemberRoleEnum) {
     return this.repository.updateOne(
       {
         _id: teamId,

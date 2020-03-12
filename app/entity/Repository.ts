@@ -4,7 +4,7 @@ import { Module } from './Module';
 
 export class RepositoryMember {
   @Column()
-  userId: string;
+  accountID: string;
 
   @Column()
   email: string;
@@ -43,4 +43,10 @@ export class Repository {
 
   @Column(() => Module)
   modules: Module[];
+
+  @Column()
+  icon: string;
+
+  @Column()
+  color: string;
 }

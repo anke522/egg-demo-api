@@ -1,21 +1,13 @@
-import { Service, Context } from 'egg';
+import { Context } from 'egg';
 import { Account } from '../entity/Account';
-import { getRepository, Repository, UpdateResult, ObjectID } from 'typeorm';
+import { UpdateResult, ObjectID } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
-export default class UserService extends Service {
-  repository: Repository<Account>;
+import { AbstractService } from './AbstractService';
+export default class UserService extends AbstractService<Account> {
   selectAttributes;
   constructor(ctx: Context) {
-    super(ctx);
-    this.repository = getRepository(Account);
-    this.selectAttributes = [
-      'id',
-      'name',
-      'email',
-      'role',
-      'createAt',
-      'updateAt'
-    ];
+    super(ctx, Account);
+    this.selectAttributes = ['id', 'name', 'email', 'role', 'createAt', 'updateAt'];
   }
   async checkRepeat(email: string): Promise<boolean> {
     const count = await this.repository.count({ email });
@@ -64,14 +56,17 @@ export default class UserService extends Service {
   update(user: Account) {
     return this.repository.update(user.id, user);
   }
+  /**
+   *
+   * @param limit
+   * @param page
+   * @param keyword
+   */
   search(limit = 15, page = 1, keyword: string) {
     const where = {};
     if (keyword.length > 0) {
       Object.assign(where, {
-        $or: [
-          { email: new RegExp(keyword, 'i') },
-          { username: new RegExp(keyword, 'i') }
-        ]
+        $or: [{ email: new RegExp(keyword, 'i') }, { username: new RegExp(keyword, 'i') }]
       });
     }
     return this.repository.find({

@@ -22,6 +22,15 @@ export class TeamMember {
     default: TeamMemberRoleEnum.OWNER
   })
   role: TeamMemberRoleEnum;
+  constructor(
+    accountId?: string,
+    email?: string,
+    role: TeamMemberRoleEnum = TeamMemberRoleEnum.OWNER
+  ) {
+    this.accountId = accountId!;
+    this.role = role;
+    this.email = email!;
+  }
 }
 @Entity()
 export class Team extends AuditEntity {

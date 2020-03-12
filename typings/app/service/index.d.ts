@@ -11,7 +11,7 @@ import ExportGroupService from '../../../app/service/GroupService';
 import ExportInterfaceCatalogService from '../../../app/service/InterfaceCatalogService';
 import ExportInterfaceCollectionService from '../../../app/service/InterfaceCollectionService';
 import ExportInterfaceService from '../../../app/service/InterfaceService';
-import ExportLogService from '../../../app/service/LogService';
+import ExportLogService from '../../../app/service/LoggerService';
 import ExportModuleService from '../../../app/service/ModuleService';
 import ExportOrganizationsService from '../../../app/service/OrganizationsService';
 import ExportProjectService from '../../../app/service/ProjectService';
@@ -31,7 +31,7 @@ declare module 'egg' {
     interfaceCatalogService: ExportInterfaceCatalogService;
     interfaceCollectionService: ExportInterfaceCollectionService;
     interfaceService: ExportInterfaceService;
-    logService: ExportLogService;
+    loggerService: ExportLogService;
     moduleService: ExportModuleService;
     organizationsService: ExportOrganizationsService;
     projectService: ExportProjectService;
