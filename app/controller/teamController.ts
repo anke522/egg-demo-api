@@ -20,6 +20,27 @@ export default class TeamController extends AbstractController {
     const result = await this.service.teamService.save(team);
     this.success(result);
   }
+  async search() {
+    const { queryString, limit, page } = this.ctx.request.body;
+    const repositories = await this.service.repositoryService.search(limit, page, queryString);
+    this.success(repositories);
+  }
+  async getTeam() {
+    const teamId = this.ctx.params.id;
+    const team = await this.service.teamService.findById(teamId);
+    this.success(team);
+  }
+  async allOwnTeam() {
+    const { keyword, limit, page } = this.ctx.request.query;
+    const accountId = this.getAccountId();
+    const repositories = await this.service.teamService.queryOwnTeam(
+      parseInt(limit),
+      parseInt(page),
+      accountId,
+      keyword
+    );
+    this.successPageResult(repositories[0], repositories[1]);
+  }
   async addTeamMember() {
     const { id, email } = this.ctx.request.body;
     assert(id, 403, 'required teamId');

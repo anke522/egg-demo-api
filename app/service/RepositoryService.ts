@@ -23,13 +23,20 @@ export default class RepositoryService extends AbstractService<RepositoryEntity>
   totalCount() {
     return this.repository.count();
   }
-  create(accountId: string, name: string, description: string, members: RepositoryMember[]) {
+  create(
+    accountId: string,
+    name: string,
+    description: string,
+    members: RepositoryMember[],
+    organizationId?: string
+  ) {
     const repository = this.repository.create({
       name,
       description,
       creatorId: accountId,
       ownerId: accountId,
-      members
+      members,
+      organizationId
     });
     return this.repository.save(repository);
   }
@@ -39,26 +46,58 @@ export default class RepositoryService extends AbstractService<RepositoryEntity>
   delete(id: string) {
     return this.repository.delete(id);
   }
-  findParticipate(accountId: string) {
-    return this.repository.find({
-      select: ['id', 'name'],
-      where: {
-        $or: [
-          {
-            members: {
-              $elemMatch: {
-                accountId
-              }
+  findParticipate(limit: number, page: number, accountId: string, keyword?: string) {
+    if (limit === Number.NaN || limit === undefined) {
+      limit = 15;
+    }
+    if (page === Number.NaN || limit === undefined) {
+      page = 1;
+    }
+    const where = {
+      $or: [
+        {
+          members: {
+            $elemMatch: {
+              accountId
             }
-          },
-          {
-            creatorId: accountId
-          },
-          {
-            ownerId: accountId
           }
-        ]
-      }
+        },
+        {
+          creatorId: accountId
+        },
+        {
+          ownerId: accountId
+        }
+      ]
+    };
+    if (keyword) {
+      Object.assign(where, {
+        name: new RegExp(keyword, 'i')
+      });
+    }
+    return this.repository.findAndCount({
+      where,
+      skip: (page - 1) * limit,
+      take: limit
+    });
+  }
+  findOrgParticipate(limit: number, page: number, orgId: string, keyword?: string) {
+    if (limit === Number.NaN) {
+      limit = 15;
+    }
+    if (page === Number.NaN) {
+      page = 1;
+    }
+    const where = {
+      organizationId: orgId
+    };
+    if (keyword) {
+      Object.assign(where, { name: new RegExp(keyword, 'i') });
+    }
+    return this.repository.findAndCount({
+      where,
+      skip: (page - 1) * limit,
+      take: limit
     });
   }
   findById(repositoryId: string) {
@@ -86,4 +125,25 @@ export default class RepositoryService extends AbstractService<RepositoryEntity>
   update(repository: RepositoryEntity) {
     return this.repository.save(repository);
   }
+  // queryOwnTeam(limit = 15, page = 1, accountId: string, keyword?: string) {
+  //   const where = {
+  //     $or: {
+
+  //       members: {
+  //         $elemMatch: {
+  //           accountId,
+  //           role: TeamMemberRoleEnum.OWNER
+  //         }
+  //       }
+  //     }
+  //   };
+  //   if (keyword) {
+  //     Object.assign(where, { name: Like(keyword) });
+  //   }
+  //   return this.repository.findAndCount({
+  //     where,
+  //     skip: (page - 1) * limit,
+  //     take: limit
+  //   });
+  // }
 }

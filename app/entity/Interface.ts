@@ -17,7 +17,8 @@ export class Interface extends AuditEntity {
 
   @Column()
   method: string;
-
+  @Column()
+  status: number;
   @Column()
   creatorId: string;
 

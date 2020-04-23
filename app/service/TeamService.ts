@@ -84,4 +84,50 @@ export default class TeamService extends AbstractService<Team> {
       }
     );
   }
+  search(limit = 15, page = 1, keyword: string) {
+    const where = {};
+    if (keyword) {
+      Object.assign(where, { name: new RegExp(keyword, 'i') });
+    }
+    return this.repository.find({
+      where,
+      skip: (page - 1) * limit,
+      take: limit
+    });
+  }
+  getSelfTeam(limit = 15, page = 1, accountId: string, keyword: string) {
+    const where = {};
+    if (keyword) {
+      Object.assign(where, { name: new RegExp(keyword, 'i') });
+    }
+    return this.repository.find({
+      where,
+      skip: (page - 1) * limit,
+      take: limit
+    });
+  }
+  queryOwnTeam(limit = 15, page = 1, accountId: string, keyword?: string) {
+    if (limit === Number.NaN) {
+      limit = 15;
+    }
+    if (page === Number.NaN) {
+      page = 1;
+    }
+    const where = {
+      members: {
+        $elemMatch: {
+          accountId,
+          role: TeamMemberRoleEnum.OWNER
+        }
+      }
+    };
+    if (keyword) {
+      Object.assign(where, { name: new RegExp(keyword, 'i') });
+    }
+    return this.repository.findAndCount({
+      where,
+      skip: (page - 1) * limit,
+      take: limit
+    });
+  }
 }

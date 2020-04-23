@@ -5,6 +5,13 @@ export default class AbstractController extends Controller {
     this.ctx.status = 200;
     this.ctx.body = data;
   }
+  successPageResult(data: any[], count: number) {
+    this.ctx.status = 200;
+    this.ctx.body = {
+      list: data,
+      total: count
+    };
+  }
   error(data, code = 403) {
     if (typeof data === 'string') {
       this.ctx.throw(code, data);

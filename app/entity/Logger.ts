@@ -9,6 +9,14 @@ export enum LoggerType {
   JOIN = 'join',
   EXIT = 'exit'
 }
+export enum SubjectEnum {
+  ACCOUNT = 'account',
+  ORGANIZATION = 'organization',
+  INTERFACE = 'interface',
+  REPOSITORY = 'repository',
+  OTHER = 'other',
+  MODULE = 'module'
+}
 @Entity()
 export class Logger {
   @ObjectIdColumn()
@@ -36,6 +44,12 @@ export class Logger {
 
   @Column()
   content: string;
+
+  @Column()
+  subject: string;
+
+  @Column()
+  subjectId: string;
 
   @CreateDateColumn()
   createAt: Date;

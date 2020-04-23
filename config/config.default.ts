@@ -13,7 +13,8 @@ export default (appInfo: EggAppInfo) => {
   config.security = {
     csrf: {
       enable: false
-    }
+    },
+    domainWhiteList: ['*']
   };
   config.middleware = ['auth'];
   config.authLogin = {
@@ -21,6 +22,9 @@ export default (appInfo: EggAppInfo) => {
   };
   config.cors = {
     credentials: true
+    // origin: 'http://localhost:8080',
+    // allowHeaders:'Content-Type,Content-Length, Authorization, Accept,X-Requested-With,Access-token',
+    // allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS'
   };
   // add your special config in here
   const bizConfig = {

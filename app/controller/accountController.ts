@@ -2,7 +2,8 @@ import AbstractController from './abstractController';
 import * as svgCaptcha from 'svg-captcha';
 import { compare } from 'bcryptjs';
 import assert = require('http-assert');
-
+import path = require('path');
+import fs = require('fs');
 export default class AccountController extends AbstractController {
   async count() {
     const count = this.service.accountService.totalCount();
@@ -59,6 +60,7 @@ export default class AccountController extends AbstractController {
           httpOnly: false,
           encrypt: true
         });
+        this.ctx.session.token = token;
         this.success({
           email: account.email,
           id: account.id,
@@ -119,11 +121,37 @@ export default class AccountController extends AbstractController {
     const pngPrefixCode = 'data:image/png;base64,';
     const jpegPrefixCode = 'data:image/jpeg;base64,';
 
+    let imageType;
     if (baseCode.length - (baseCode.length / 8) * 2 > 200000) {
       this.error({ msg: '图片大小不能超过200kb' });
     }
+    if (baseCode.includes(pngPrefixCode)) {
+      imageType = 'image/png';
+    } else if (baseCode.includes(jpegPrefixCode)) {
+      imageType = 'image/jpeg';
+    } else {
+      this.error({ msg: '仅支持jpeg和png格式的图片' });
+    }
+    const avatar = this.service.avatarService.create(baseCode, imageType);
+    this.success(avatar);
   }
-
+  async avatar() {
+    const { accountId } = this.ctx.request.query;
+    assert(accountId, 403, 'required accountId Id');
+    const avatar = await this.service.avatarService.findByAccountId(accountId);
+    let type;
+    let dataBuffer;
+    if (avatar) {
+      type = avatar.type;
+      dataBuffer = new Buffer(avatar.basecode, 'base64');
+    } else {
+      const imagePath = path.join(this.ctx.app.baseDir, '/static/images/avatar2.jpg');
+      dataBuffer = fs.readFileSync(imagePath);
+      type = 'image/jpg';
+    }
+    this.ctx.set('Content-type', type);
+    this.ctx.body = dataBuffer;
+  }
   async search() {
     const { queryString, limit, page } = this.ctx.request.body;
     const accounts = await this.service.accountService.search(limit, page, queryString);
@@ -131,10 +159,15 @@ export default class AccountController extends AbstractController {
   }
   async accountFlow() {
     const accountId = this.getAccountId();
-    const repositories = await this.service.repositoryService.findParticipate(accountId);
+    const { limit, page } = this.ctx.request.body;
+    const repositories = await this.service.repositoryService.findParticipate(
+      limit,
+      page,
+      accountId
+    );
     if (repositories.length > 0) {
       const flows = this.service.loggerService.queryByRepositoryIds(
-        repositories.map(r => r.id.toString())
+        repositories[0].map(r => r.id.toString())
       );
       this.success(flows);
     } else {

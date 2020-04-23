@@ -12,6 +12,9 @@ export default function AuthMiddleware(): any {
           signed: false,
           encrypt: true
         });
+        // if (!accountId) {
+        //   accountId = ctx.headers['access-token'];
+        // }
         if (accountId) {
           // const token = ctx.cookies.get('token');
           await next();

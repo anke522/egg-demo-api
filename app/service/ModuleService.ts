@@ -2,7 +2,7 @@ import { Context } from 'egg';
 import { Module } from '../entity/Module';
 import { AbstractService } from './AbstractService';
 
-export class ModuleService extends AbstractService<Module> {
+export default class ModuleService extends AbstractService<Module> {
   constructor(ctx: Context) {
     super(ctx, Module);
   }
@@ -11,14 +11,15 @@ export class ModuleService extends AbstractService<Module> {
   }
   countByRepositoryId(repositoryId: string) {
     return this.repository.count({
-      repositoryId
+      repositoryId,
     });
   }
-  create(name: string, description: string, repositoryId: string) {
+  create(name: string, description: string, repositoryId: string, accountId: string) {
     const repository = this.repository.create({
       name,
       description,
-      repositoryId
+      repositoryId,
+      creatorId: accountId,
     });
     return this.repository.save(repository);
   }
@@ -27,12 +28,12 @@ export class ModuleService extends AbstractService<Module> {
   }
   findByRepositoryId(repositoryId: string) {
     return this.repository.find({
-      repositoryId
+      repositoryId,
     });
   }
   findByName(name: string) {
     return this.repository.find({
-      name
+      name,
     });
   }
   delete(moduleId: string) {
@@ -43,13 +44,13 @@ export class ModuleService extends AbstractService<Module> {
   }
   checkRepeatName(name: string) {
     return this.repository.count({
-      name
+      name,
     });
   }
   update(name: string, description: string, moduleId: string) {
     return this.repository.update(moduleId, {
       name,
-      description
+      description,
     });
   }
 }

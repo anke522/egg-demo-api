@@ -4,7 +4,8 @@ import { Entity, ObjectIdColumn, Column } from 'typeorm';
 export class Avatar {
   @ObjectIdColumn()
   id: string;
-
+  @Column()
+  accountId: string;
   @Column()
   basecode: string;
 

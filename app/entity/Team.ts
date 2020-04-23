@@ -16,7 +16,7 @@ export class TeamMember {
   @Column()
   name: string;
   @Column()
-  email: string;
+  description: string;
   @Column('enum', {
     enum: TeamMemberRoleEnum,
     default: TeamMemberRoleEnum.OWNER
@@ -24,12 +24,12 @@ export class TeamMember {
   role: TeamMemberRoleEnum;
   constructor(
     accountId?: string,
-    email?: string,
+    description?: string,
     role: TeamMemberRoleEnum = TeamMemberRoleEnum.OWNER
   ) {
     this.accountId = accountId!;
     this.role = role;
-    this.email = email!;
+    this.description = description!;
   }
 }
 @Entity()

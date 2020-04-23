@@ -10,7 +10,7 @@ export class OrganizationService extends AbstractService<Organization> {
   count() {
     return this.repository.count();
   }
-  search(limit = 15, page = 1, keyword: string) {
+  query(limit = 15, page = 1, keyword: string) {
     const where = {};
     if (keyword) {
       Object.assign(where, { name: Like(keyword) });
@@ -21,11 +21,39 @@ export class OrganizationService extends AbstractService<Organization> {
       take: limit
     });
   }
+  queryByAccountId(accountId: string, limit = 15, page = 1, keyword: string) {
+    const where = {};
+    if (keyword) {
+      Object.assign(where, { name: Like(keyword) });
+    }
+    return this.repository.findAndCount({
+      where: {
+        $or: [{ ownerId: accountId }, { creatorId: accountId }]
+      },
+      skip: (page - 1) * limit,
+      take: limit
+    });
+  }
   getOwnOrganization(accountId: string) {
     return this.repository.find({
       where: {
         $or: [{ ownerId: accountId }, { creatorId: accountId }]
       }
+    });
+  }
+  getOwnOrganizationCount(accountId: string) {
+    return this.repository.count({ ownerId: accountId });
+  }
+  search(keyword: string) {
+    const where = {};
+    if (keyword) {
+      Object.assign(where, {
+        $or: [{ email: new RegExp(keyword, 'i') }, { username: new RegExp(keyword, 'i') }]
+      });
+    }
+    return this.repository.find({
+      select: ['name'],
+      take: 10
     });
   }
 }
